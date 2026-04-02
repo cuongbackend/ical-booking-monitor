@@ -1,0 +1,12 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## Runtime state
+ICalMonitor.Worker/data/
+
+## Secrets — không commit token thật
+# appsettings.Production.json
