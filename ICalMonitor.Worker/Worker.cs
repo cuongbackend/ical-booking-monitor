@@ -6,8 +6,8 @@ namespace ICalMonitor.Worker;
 
 public class Worker(
     IOptions<AppConfig> options,
-    ICalService icalService,
-    TelegramService telegramService,
+    IICalService icalService,
+    ITelegramService telegramService,
     StateService stateService,
     ILogger<Worker> logger) : BackgroundService
 {
@@ -36,7 +36,7 @@ public class Worker(
         }
     }
 
-    private async Task ScanRoomAsync(RoomConfig room, CancellationToken ct)
+    internal async Task ScanRoomAsync(RoomConfig room, CancellationToken ct)
     {
         logger.LogInformation("Quét phòng: {Room} ({Source})", room.Name, room.Source);
 

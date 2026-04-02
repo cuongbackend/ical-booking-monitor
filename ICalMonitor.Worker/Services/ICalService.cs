@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ICalMonitor.Worker.Services;
 
-public class ICalService(IHttpClientFactory httpClientFactory, ILogger<ICalService> logger)
+public class ICalService(IHttpClientFactory httpClientFactory, ILogger<ICalService> logger) : IICalService
 {
     public async Task<List<BookingEvent>> FetchBookingsAsync(string icalUrl)
     {

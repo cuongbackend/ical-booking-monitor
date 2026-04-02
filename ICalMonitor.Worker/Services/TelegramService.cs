@@ -6,7 +6,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace ICalMonitor.Worker.Services;
 
-public class TelegramService(IOptions<AppConfig> options, ILogger<TelegramService> logger)
+public class TelegramService(IOptions<AppConfig> options, ILogger<TelegramService> logger) : ITelegramService
 {
     private readonly TelegramConfig _cfg = options.Value.Telegram;
 
@@ -18,6 +18,27 @@ public class TelegramService(IOptions<AppConfig> options, ILogger<TelegramServic
             return;
         }
 
+        var message = BuildMessage(booking, room);
+
+        try
+        {
+            var botClient = new TelegramBotClient(_cfg.BotToken);
+            await botClient.SendMessage(
+                chatId: _cfg.ChatId,
+                text: message,
+                parseMode: ParseMode.Html,
+                cancellationToken: ct);
+
+            logger.LogInformation("Đã gửi Telegram notification: phòng={Room}, uid={Uid}", room.Name, booking.Uid);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Lỗi gửi Telegram: phòng={Room}, uid={Uid}", room.Name, booking.Uid);
+        }
+    }
+
+    internal static string BuildMessage(BookingEvent booking, RoomConfig room)
+    {
         var icon = room.Source?.ToLowerInvariant() switch
         {
             "airbnb" => "🏡",
@@ -36,7 +57,7 @@ public class TelegramService(IOptions<AppConfig> options, ILogger<TelegramServic
         var guestName = string.IsNullOrWhiteSpace(booking.Summary) ? "Chưa có tên" : booking.Summary;
         var shortUid = booking.Uid.Length > 16 ? booking.Uid[..16] : booking.Uid;
 
-        var message = $"""
+        return $"""
             {icon} <b>Booking mới — {EscapeHtml(room.Name)}</b>
             📋 Nguồn: {EscapeHtml(sourceLabel)}
             👤 Khách: {EscapeHtml(guestName)}
@@ -45,22 +66,6 @@ public class TelegramService(IOptions<AppConfig> options, ILogger<TelegramServic
             🌙 Số đêm: {nights}
             🆔 ID: {EscapeHtml(shortUid)}
             """;
-
-        try
-        {
-            var botClient = new TelegramBotClient(_cfg.BotToken);
-            await botClient.SendMessage(
-                chatId: _cfg.ChatId,
-                text: message,
-                parseMode: ParseMode.Html,
-                cancellationToken: ct);
-
-            logger.LogInformation("Đã gửi Telegram notification: phòng={Room}, uid={Uid}", room.Name, booking.Uid);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Lỗi gửi Telegram: phòng={Room}, uid={Uid}", room.Name, booking.Uid);
-        }
     }
 
     private static string EscapeHtml(string text)

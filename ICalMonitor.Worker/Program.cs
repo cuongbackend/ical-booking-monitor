@@ -16,8 +16,8 @@ builder.Services.AddHttpClient("ical", client =>
 
 // Services
 builder.Services.AddSingleton<StateService>();
-builder.Services.AddScoped<ICalService>();
-builder.Services.AddScoped<TelegramService>();
+builder.Services.AddSingleton<IICalService, ICalService>();
+builder.Services.AddSingleton<ITelegramService, TelegramService>();
 
 // Worker
 builder.Services.AddHostedService<Worker>();
