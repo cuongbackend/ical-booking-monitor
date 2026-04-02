@@ -52,13 +52,13 @@ public class Worker(
         }
 
         var isFirstRun = stateService.IsFirstRun(room.Name);
-        if (isFirstRun)
-        {
-            logger.LogInformation("Phòng {Room}: lần đầu chạy — lưu {Count} UID làm baseline, không gửi notification.",
-                room.Name, bookings.Count);
-            stateService.AddUids(room.Name, bookings.Select(b => b.Uid));
-            return;
-        }
+        //if (isFirstRun)
+        //{
+        //    logger.LogInformation("Phòng {Room}: lần đầu chạy — lưu {Count} UID làm baseline, không gửi notification.",
+        //        room.Name, bookings.Count);
+        //    stateService.AddUids(room.Name, bookings.Select(b => b.Uid));
+        //    return;
+        //}
 
         var knownUids = stateService.GetKnownUids(room.Name);
         var newBookings = bookings.Where(b => !knownUids.Contains(b.Uid)).ToList();
