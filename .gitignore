@@ -10,3 +10,8 @@ ICalMonitor.Worker/data/
 
 ## Secrets — không commit token thật
 # appsettings.Production.json
+
+## App specific
+ICalMonitor.Worker/appsettings.json
+data/
+**/publish/
